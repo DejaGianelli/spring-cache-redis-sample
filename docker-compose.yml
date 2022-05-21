@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+
+  spring-api-cache:
+    container_name: spring-api-cache
+    image: spring-api-cache
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    environment:
+      REDIS_HOST: spring-api-cache-redis
+      REDIS_PORT: 6379
+      JVM_OPT: -agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n
+    depends_on:
+      - spring-api-cache-redis
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    networks:
+      - spring-api-cache-network
+
+  spring-api-cache-redis:
+    image: redis:7.0.0-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - spring-api-cache-network
+
+networks:
+  spring-api-cache-network:
